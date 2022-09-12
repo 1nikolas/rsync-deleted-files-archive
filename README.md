@@ -2,7 +2,7 @@
 Bash script for backup based on rsync with deleted file archive functionality
 
 ## Quickstart
-Download the script and read the comments in order to modify it to your likings. To automate this you can use [systemd timers](https://wiki.archlinux.org/title/Systemd/Timers).
+First of all make sure you have `jq` and `rsync` installed. Everything else should be pre-installed on any modern linux system. Then download the script and read the comments in order to modify it to your likings. To automate this you can use [systemd timers](https://wiki.archlinux.org/title/Systemd/Timers).
 
 ## Note
 This script hasn't been tested extensively and it's **not** that good at making sure nothing gets accidentally deleted. So use this at your own risk. If you find any bug, feel free to [open an issue](https://github.com/1nikolas/rsync-deleted-files-archive/issues).
