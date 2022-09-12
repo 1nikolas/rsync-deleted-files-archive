@@ -7,7 +7,7 @@ Note: This script hasn't been tested extensively and it's **not** that good at m
 First of all make sure you have `jq` and `rsync` installed. Everything else should be pre-installed on any modern linux system. Then download the script and read the comments in order to modify it to your likings. To automate this you can use [systemd timers](https://wiki.archlinux.org/title/Systemd/Timers).
 
 ## What?
-This script is an rsync wrapper with support for deleted file archive and auto-delete. Basically it makes a backup from a (your PC) to b (your backup) and then checks if files deleted from a are still on b. Said files will be moved into a pre-determined archive directory and be auto-deleted after a certain amount of days after they were deleted (which you can configure).
+This script is an rsync wrapper with support for deleted file archive and auto-delete. It basically makes a backup from a (your PC) to b (your backup) and then checks if files deleted from a are still on b. Said files will be moved into a pre-determined archive directory and be auto-deleted after a certain amount of days after they were deleted (which you can configure).
 
 ## Why?
 Back when I had Windows, I used to have [bvckup2](https://bvckup2.com/) for my backups. This had an option to archive deleted files on a specific directory and then auto-delete them after a certain amount of days. I searched really deep for something like this but the closest thing I got was snapshot rsync apps (like rsnapshot) which create a mess on the backup (I don't want multiple versions of a file, one is fine for me). So I just made this; a simple script which does exactly that, based on rsync.
