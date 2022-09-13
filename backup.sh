@@ -88,12 +88,12 @@ fi
 # Get list of files/folders that rsync thinks should be deleted
 # then move them on the archive and mark them for deletion on today + x days
 #
-# Rsync lists files and folders for deletion starting with deepest and getting to parent folders.
-# That list gets reversed so if a whole folder was deleted, it first procceses the parent folder and then the other files
-# (which get skipped because they have been moved to the archive and don't exist anymore). This saves time and db entries :)
+# We sort the path list alphabetically so if a whole folder was deleted, it first procceses the parent folder and then the
+# other files (which get skipped because they have been moved to the archive and don't exist anymore).
+# This saves time and db entries :)
 
 paths=()
-readarray -t paths < <(rsync -rRvn --exclude '.cache' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | tac)
+readarray -t paths < <(rsync -rRvn --exclude '.cache' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | sort)
 
 for path in "${paths[@]}"; do
     echo "$BACKUP_PATH$path marked for deletion"
