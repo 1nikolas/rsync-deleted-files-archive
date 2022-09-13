@@ -103,7 +103,7 @@ for path in "${paths[@]}"; do
         if [[ -d $BACKUP_PATH$path ]]; then # folder
             cp -aft "$BACKUP_PATH$path"* "$(dirname "$ARCHIVE_PATH$path")"/
         else # file
-            cp -af "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"/
+            cp -f "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"/
         fi
         rm -rf "$BACKUP_PATH$path"
         jq '.pending_deletion += [{"path": "'"$ARCHIVE_PATH$path"'", "delete_on": '"$timestamp_in_x_days"'}]' "$DB_PATH" > "$DB_PATH.tmp" && mv "$DB_PATH.tmp" "$DB_PATH"
