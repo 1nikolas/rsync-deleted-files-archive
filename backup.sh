@@ -100,7 +100,7 @@ for path in "${paths[@]}"; do
     if [[ -f $BACKUP_PATH$path || -d $BACKUP_PATH$path ]]; then
         echo "Moving $BACKUP_PATH$path to archive..."
         mkdir --parents "$(dirname "$ARCHIVE_PATH$path")"
-        if [[ $path == */ ]]; then # folder
+        if [[ -d $BACKUP_PATH$path ]]; then # folder
             cp -aft "$BACKUP_PATH$path"* "$(dirname "$ARCHIVE_PATH$path")"/
         else # file
             cp -af "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"/
