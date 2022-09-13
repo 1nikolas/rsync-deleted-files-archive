@@ -21,6 +21,22 @@ exec 1>>$BACKUP_PATH/backup.log 2>&1
 echo "-----Starting run on $(date)-----"
 echo ""
 
+# Check for dependencies
+dependencies=("jq" "rsync")
+for dependency in "${dependencies[@]}"; do
+    if ! command -v "$dependency" &> /dev/null; then
+        echo "$dependency not installed!"
+
+        echo ""
+        echo "-----Run finished at $(date)-----"
+        echo ""
+        echo "===================================================================="
+        echo ""
+
+        exit 0
+    fi
+done
+
 # Do the backup normally, let rsync handle everything
 # You can modify this command to your liking
 # (make sure you keep -r and -R otherwise it might break stuff. -v is recommended for logging)
