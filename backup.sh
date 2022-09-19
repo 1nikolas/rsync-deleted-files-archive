@@ -41,7 +41,7 @@ done
 # You can modify this command to your liking
 # (make sure you keep -r and -R otherwise it might break stuff. -v is recommended for logging)
 
-rsync -rRtv --exclude-from="$(dirname -- "$0";)"'/exclude.txt' "$SOURCE_PATH" "$BACKUP_PATH"
+rsync -rRtv --exclude '.cache' "$SOURCE_PATH" "$BACKUP_PATH"
 
 
 # If the db doesn't exist, make a template json and exit
@@ -88,7 +88,7 @@ echo
 echo "Preparing move to archive..."
 
 paths=()
-readarray -t paths < <(rsync -rRvn --exclude-from="$(dirname -- "$0";)"'/exclude.txt' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | sort)
+readarray -t paths < <(rsync -rRvn --exclude '.cache' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | sort)
 
 for path in "${paths[@]}"; do
     if [[ -f $BACKUP_PATH$path || -d $BACKUP_PATH$path ]]; then
