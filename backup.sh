@@ -41,7 +41,7 @@ done
 # You can modify this command to your liking
 # (make sure you keep -r and -R otherwise it might break stuff. -v is recommended for logging)
 
-rsync -rRtv --exclude '.cache' "$SOURCE_PATH" "$BACKUP_PATH"
+rsync -rRtv --exclude-from="$(dirname -- "$0";)"'/exclude.txt' "$SOURCE_PATH" "$BACKUP_PATH"
 
 
 # If the db doesn't exist, make a template json and exit
@@ -77,14 +77,6 @@ for deletepath in "${deletepaths[@]}"; do
 done
 
 
-# Delete empty folder from the archive
-# Sometimes folders are left over from deleted files. Who need empty folders?
-
-if [[ -d $ARCHIVE_PATH ]]; then
-    find "$ARCHIVE_PATH" -type d -empty -delete
-fi
-
-
 # Get list of files/folders that rsync thinks should be deleted
 # then move them on the archive and mark them for deletion on today + x days
 #
@@ -92,16 +84,18 @@ fi
 # other files (which get skipped because they have been moved to the archive and don't exist anymore).
 # This saves time and db entries :)
 
+echo
+echo "Preparing move to archive..."
+
 paths=()
-readarray -t paths < <(rsync -rRvn --exclude '.cache' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | sort)
+readarray -t paths < <(rsync -rRvn --exclude-from="$(dirname -- "$0";)"'/exclude.txt' --delete "$SOURCE_PATH" "$BACKUP_PATH" | grep deleting | sed "s|deleting ||g" | sort)
 
 for path in "${paths[@]}"; do
-    echo "$BACKUP_PATH$path marked for deletion"
     if [[ -f $BACKUP_PATH$path || -d $BACKUP_PATH$path ]]; then
-        echo "Moving $BACKUP_PATH$path to archive..."
-        mkdir --parents "$(dirname "$ARCHIVE_PATH$path")"
+        echo "Moving $BACKUP_PATH$path to archive ("$ARCHIVE_PATH$path")..."
+        mkdir --parents "$ARCHIVE_PATH$path"
         if [[ -d $BACKUP_PATH$path ]]; then # folder
-            cp -aft "$BACKUP_PATH$path"* "$(dirname "$ARCHIVE_PATH$path")"/
+            cp -af "$BACKUP_PATH$path". "$ARCHIVE_PATH$path"
         else # file
             cp -f "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"/
         fi
@@ -109,6 +103,15 @@ for path in "${paths[@]}"; do
         jq '.pending_deletion += [{"path": "'"$ARCHIVE_PATH$path"'", "delete_on": '"$timestamp_in_x_days"'}]' "$DB_PATH" > "$DB_PATH.tmp" && mv "$DB_PATH.tmp" "$DB_PATH"
     fi
 done
+
+
+# Delete empty folder from the archive
+# Sometimes folders are left over from deleted files. Who needs empty folders?
+
+if [[ -d $ARCHIVE_PATH ]]; then
+    find "$ARCHIVE_PATH" -type d -empty -delete
+fi
+
 
 echo ""
 echo "-----Run finished at $(date)-----"
