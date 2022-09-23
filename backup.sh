@@ -92,12 +92,14 @@ readarray -t paths < <(rsync -rRvn --exclude '.cache' --delete "$SOURCE_PATH" "$
 
 for path in "${paths[@]}"; do
     if [[ -f $BACKUP_PATH$path || -d $BACKUP_PATH$path ]]; then
-        echo "Moving $BACKUP_PATH$path to archive ("$ARCHIVE_PATH$path")..."
-        mkdir --parents "$ARCHIVE_PATH$path"
         if [[ -d $BACKUP_PATH$path ]]; then # folder
+            mkdir --parents "$ARCHIVE_PATH$path"
+            echo "Moving folder $BACKUP_PATH$path to archive ("$ARCHIVE_PATH$path")..."
             cp -af "$BACKUP_PATH$path". "$ARCHIVE_PATH$path"
         else # file
-            cp -f "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"/
+            mkdir --parents "$(dirname "$ARCHIVE_PATH$path")"
+            echo "Moving file $BACKUP_PATH$path to archive ("$(dirname "$ARCHIVE_PATH$path")")..."
+            cp -f "$BACKUP_PATH$path" "$(dirname "$ARCHIVE_PATH$path")"
         fi
         rm -rf "$BACKUP_PATH$path"
         jq '.pending_deletion += [{"path": "'"$ARCHIVE_PATH$path"'", "delete_on": '"$timestamp_in_x_days"'}]' "$DB_PATH" > "$DB_PATH.tmp" && mv "$DB_PATH.tmp" "$DB_PATH"
