@@ -13,7 +13,7 @@ DAYS_AFTER_DELETE=10
 timespamp_now=$(date +%s)
 timestamp_in_x_days=$(date -d "+$DAYS_AFTER_DELETE days" +%s)
 
-# This is used for logging. You can see
+# This is used for logging. No idea how it works, but it works :)
 exec 3>&1 4>&2
 trap 'exec 2>&4 1>&3' 0 1 2 3
 exec 1>>$BACKUP_PATH/backup.log 2>&1
